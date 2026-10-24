@@ -77,7 +77,7 @@
 
     /* ---------- acasă ---------- */
     function home(){const feat=(S.featured||[]).map(byId).filter(Boolean),ds=designers();
-        return `<main><section class="hero"><div class="hero-copy"><span class="eyebrow">Salon Emma · ${esc(S.city)}</span><h1>Ținuta potrivită<br>pentru fiecare <i>moment important.</i></h1><p>Rochii de mireasă, costume pentru mire, rochii de ocazie și menswear, într-un singur salon.</p><div class="cta3">${NAV.map(c=>btn('#/c/'+c,S.cats[c].name,'solid')).join('')}</div></div><div class="hero-img hs" id="hs" data-off="0">${ph('Fotografie principală','images/site/hero-1.jpg')}</div></section>
+        return `<main><section class="hero"><div class="hero-copy"><span class="eyebrow">Salon Emma · ${esc(S.city)}</span><h1>Ținuta potrivită<br>pentru fiecare <i>moment important.</i></h1><p>Rochii de mireasă, costume pentru mire, rochii de ocazie și menswear, într-un singur salon.</p><div class="cta3">${NAV.map(c=>btn('#/c/'+c,S.cats[c].name,'solid')).join('')}</div></div><div class="hero-img hs" id="hs" data-off="0"></div></section>
  ${feat.length?`<section class="grid hfeat" aria-label="Piese alese">${feat.map(card).join('')}</section>`:''}
  <section class="sec"><div class="sec-h"><span class="eyebrow">Colecții</span><h2>Designeri și colecții</h2></div><div class="dz">${ds.map(([d,n])=>`<a href="#/c/mireasa/rochii-de-mireasa?designer=${encodeURIComponent(d)}"><b>${esc(d)}</b><small>${n} modele</small></a>`).join('')}<a href="#/mire/la-comanda"><b>Alexander Luxury Suits</b><small>Costume la comandă</small></a></div></section>
  <a class="promo" href="#/c/promotii"><span>Promoții active</span><b>Pachete ceremonie · Livrare express · Colecție surpriză</b>${ico('arrow')}</a>
@@ -86,11 +86,18 @@
     /* slideshow hero: caută images/site/hero-1.jpg, hero-2.jpg ... (max 12), apoi hero.jpg ca rezervă */
     let HT=null;
     function heroInit(){if(!$('.hs'))return;const L=[];
-        const next=n=>{if(!$('.hs'))return;if(n>12)return done();const i=new Image();i.onload=()=>{L.push(i.src);next(n+1)};i.onerror=()=>{if(n===1){const f=new Image();f.onload=()=>{L.push(f.src);done()};f.onerror=done;f.src=site('hero.jpg')}else done()};i.src=site('hero-'+n+'.jpg')};
-        const done=()=>{const bs=$$('.hs');if(!bs.length||!L.length)return;
-            const sets=bs.map(b=>{const half=b.dataset.off==='half';b.insertAdjacentHTML('beforeend',L.map(u=>`<img src="${esc(u)}" alt="${half?'':'Salon Emma'}">`).join(''));const im=$$('img',b);let k=(half?Math.floor(L.length/2):0)%im.length;im[k].classList.add('on');return{im,k}});
+        const sets=$$('.hs').map(b=>({b,half:b.dataset.off==='half',im:[],k:0}));
+        const mk=(x,u)=>{const i=new Image();i.decoding='async';i.alt=x.half?'':'Salon Emma';i.src=u;x.b.append(i);x.im.push(i);return i};
+        /* prima poză apare imediat ce se încarcă, fără să aștepte restul slideshow-ului */
+        const got=u=>{L.push(u);sets.forEach(x=>{if(!x.half){const i=mk(x,u);if(x.im.length===1)i.classList.add('on','now')}})};
+        const fin=()=>{if(!L.length||!$('.hs'))return;
+            sets.forEach(x=>{if(x.half){L.forEach(u=>mk(x,u));x.k=Math.floor(L.length/2)%x.im.length;x.im[x.k].classList.add('on','now')}});
             if(L.length<2||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
-            HT=setInterval(()=>{if(!$('.hs')){clearInterval(HT);return}sets.forEach(x=>{x.im[x.k].classList.remove('on');x.k=(x.k+1)%x.im.length;x.im[x.k].classList.add('on')})},3000)};
+            HT=setInterval(()=>{if(!$('.hs')){clearInterval(HT);return}sets.forEach(x=>{x.im[x.k].classList.remove('now');x.im[x.k].classList.remove('on');x.k=(x.k+1)%x.im.length;x.im[x.k].classList.add('on')})},3000)};
+        const next=n=>{if(!$('.hs'))return;if(n>12)return fin();const u=site('hero-'+n+'.jpg'),i=new Image();
+            i.onload=()=>{got(u);next(n+1)};
+            i.onerror=()=>{if(n===1){const f=new Image(),fu=site('hero.jpg');f.onload=()=>{got(fu);fin()};f.onerror=fin;f.src=fu}else fin()};
+            i.src=u};
         next(1)}
 
     /* ---------- listări ---------- */
@@ -127,7 +134,7 @@
     const cntFP=()=>{const n=filt(LC.sc,DR,LC.fk).length;$('#fpn').textContent=`Afișează ${n} rezultate`};
 
     /* ---------- produs ---------- */
-    function detail(id){const p=byId(id);if(!p)return nf();const cf=S.cats[p.cat],sf=subFor(p.cat,p),rows=[['Designer',p.designer],['Categorie',sf?sf.n:p.sub],['Cod',p.code&&slug(p.code)!==slug(p.name)?p.code:''],...FAC.filter(f=>!['designer','disponibilitate'].includes(f[0])&&!(p.cat==='mireasa'&&f[0]==='culoare')).map(([k,l])=>[l,showV((p.attrs||{})[k])]),['Disponibilitate',p.avail]].filter(r=>r[1]),rel=CAT.filter(x=>x.id!==p.id&&x.cat===p.cat&&x.sub===p.sub).slice(0,4);
+    function detail(id){const p=byId(id);if(!p)return nf();const cf=S.cats[p.cat],sf=subFor(p.cat,p),rows=p.sub==='Rochii de mireasă'?[['Designer',p.designer],['Material',showV((p.attrs||{}).material)]].filter(r=>r[1]):[['Designer',p.designer],['Categorie',sf?sf.n:p.sub],['Cod',p.code&&slug(p.code)!==slug(p.name)?p.code:''],...FAC.filter(f=>!['designer','disponibilitate'].includes(f[0])&&!(p.cat==='mireasa'&&f[0]==='culoare')).map(([k,l])=>[l,showV((p.attrs||{})[k])]),['Disponibilitate',p.avail]].filter(r=>r[1]),rel=CAT.filter(x=>x.id!==p.id&&x.cat===p.cat&&x.sub===p.sub).slice(0,4);
         const dress=p.sub==='Rochii de mireasă',acc=/Papion|Brâu|Butoni|Batist|cravat|Voaluri|păr|Bijuterii|Centuri|Jupoane|Jachete/i.test(p.sub);
         return `<main class="det"><nav class="bc" aria-label="Breadcrumb"><a href="#/">Acasă</a><span>/</span><a href="#/c/${p.cat}">${cf.name}</a>${sf?`<span>/</span><a href="#/c/${p.cat}/${slug(sf.n)}">${esc(sf.n)}</a>`:''}<span>/</span><span>${esc(p.name)}</span></nav>
  <div class="dg"><div class="gal" id="gal">${ph(p.name)}</div><div class="di"><small class="eyebrow">${esc(p.designer||p.sub||cf.name)}</small><h1>${esc(p.name)}</h1>${p.desc?`<p>${esc(p.desc)}</p>`:''}${p.url?`<p><a class="ext" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.ulabel||'Vezi pagina producătorului')} ↗</a></p>`:''}
@@ -201,7 +208,7 @@
     function bkAdd(){const i=$('#bk-in');if(!i)return;const v=i.value.trim();if(!v)return;const k=slug(v),p=CAT.find(x=>x.id===k||slug(x.code||'')===k||slug(x.name)===k),val=p?p.id:v;if(BK.some(x=>slug(x)===slug(val)))toast('Produsul este deja în listă.');else BK.push(val);i.value='';bkRender()}
     function boutique(P){const p=byId(P.get('p')||'');BK=[...new Set([...(p?[p.id]:[]),...[...FAV].filter(id=>byId(id))])];
         let t=P.get('t')||(p?p.cat:(byId(BK[0])?.cat||''));if(t==='menswear')t='mire';
-        const side=(c,o)=>`<div class="bk-s ${c}" aria-hidden="true"><div class="hs" data-off="${o}">${ph('Fotografii salon','images/site/hero-1.jpg')}</div></div>`;
+        const side=(c,o)=>`<div class="bk-s ${c}" aria-hidden="true"><div class="hs" data-off="${o}"></div></div>`;
         return `<main class="bk">${side('l','0')}<div class="bk-c"><span class="eyebrow">Salon Emma · ${esc(S.city)}</span><h1 class="h1">Programează o vizită</h1>
  <div class="bk-info"><div><b>Adresă</b><p>${esc(C.address)}</p></div><div><b>Program</b>${C.hours.map(h=>`<p>${esc(h)}</p>`).join('')}</div><div><b>Contact</b><p><a href="tel:${C.phoneBride.replace(/\s/g,'')}">Mirese: ${esc(C.phoneBride)}</a></p><p><a href="tel:${C.phoneGroom.replace(/\s/g,'')}">Miri: ${esc(C.phoneGroom)}</a></p><p><a href="mailto:${C.email}">${esc(C.email)}</a></p></div></div>
  <form id="rf" class="form" novalidate><div class="bk-2"><label>Nume și prenume<input name="nume" required autocomplete="name"></label><label>Telefon<input name="tel" type="tel" required autocomplete="tel"></label></div>
