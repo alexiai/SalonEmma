@@ -1,0 +1,23 @@
+CUM PUI POZELE (nu există linkuri externe, totul se citește din acest folder)
+
+1) POZE DE PAGINĂ — în images/site/
+   hero.jpg        – imaginea mare de pe prima pagină
+   mireasa.jpg     – categoria Mireasă (prima pagină + bannerul categoriei)
+   mire.jpg        – categoria Mire
+   ocazii.jpg      – categoria Rochii de ocazie
+   menswear.jpg    – categoria Costume și menswear
+   promotii.jpg    – bannerul Promoții
+   mire-comanda.jpg, mire-tinuta.jpg – cele două trasee de pe pagina Mire
+   boutique.jpg    – poza salonului
+
+2) POZE DE PRODUS — în images/produse/<id>/   (folderul fiecărui produs există deja)
+   images/produse/bicaz/1.jpg   – poza principală (cardul + prima din galerie)
+   images/produse/bicaz/2.jpg   – apare la hover pe card (a doua poză)
+   images/produse/bicaz/3.jpg ... 8.jpg – restul galeriei (numerotate fără goluri)
+   Un produs cu o singură poză (1.jpg) nu primește galerie și nu face hover.
+   Numele folderului = ID-ul produsului. Lista completă: images/LISTA-ID-URI.txt
+
+Format: .jpg obligatoriu. Recomandat 1200–1600 px pe latura lungă, raport 3:4 sau 4:5.
+Până pui poze, cardurile arată un fundal gri cu numele produsului.
+
+PRODUSE COMUNE: pantofii și costumele Luxury apar și în Mire, și în Costume și menswear. Folderul de poze este același (un singur folder per produs).
