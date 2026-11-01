@@ -263,18 +263,16 @@ footer h4{font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weigh
     .brand b{font-size:19px;letter-spacing:.3em;padding-left:.3em}
 
     /* ---- meniu lateral (drawer) ---- */
-    .drawer{width:min(320px,84vw);padding:8px 22px 32px}
+    .drawer{width:min(280px,80vw);padding:8px 20px 28px}
     .drawer>.ib{margin-left:-10px}
-    .drawer summary{display:flex;align-items:center;justify-content:space-between;list-style:none;font-size:22px;line-height:1.2;padding:16px 0;-webkit-tap-highlight-color:transparent}
+    .drawer summary{display:block;list-style:none;font-size:18px;line-height:1.2;padding:13px 0;-webkit-tap-highlight-color:transparent}
     .drawer summary::-webkit-details-marker{display:none}
     .drawer summary::marker{content:""}
-    /* săgeată fină (chevron) în loc de triunghiul implicit */
-    .drawer summary::after{content:"";flex:none;width:7px;height:7px;margin:-4px 4px 0 14px;border-right:1px solid var(--muted);border-bottom:1px solid var(--muted);transform:rotate(45deg);transition:transform .25s ease,margin .25s ease}
-    .drawer details[open]>summary::after{transform:rotate(-135deg);margin-top:4px;border-color:var(--ink)}
-    .drawer details[open]{padding-bottom:10px}
-    .drawer details a{font-size:14px;line-height:1.4;padding:9px 0 9px 2px;color:#4a4540;letter-spacing:.01em}
-    .drawer details a:first-of-type{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--wine);padding-bottom:12px}
-    .drawer .dl{font-size:22px;line-height:1.2;padding:16px 0}
+    .drawer details[open]{padding-bottom:8px}
+    .drawer details[open]>summary{color:var(--wine)}
+    .drawer details a{font-size:13px;line-height:1.4;padding:7px 0 7px 2px;color:#4a4540;letter-spacing:.01em}
+    .drawer details a:first-of-type{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding-bottom:10px}
+    .drawer .dl{font-size:18px;line-height:1.2;padding:13px 0}
 
     /* ---- galerie produs: săgeți fine în loc de ← → ---- */
     .gn{font-size:12px;gap:12px;bottom:10px}
